@@ -27,14 +27,15 @@ from PyQt4.QtCore import QVariant
 def create_points_at(startpoint, endpoint, distance, geom, fid, force, divide):
     """Creating Points at coordinates along the line
     """
-    length = geom.length()
-
-    if divide > 0:
-        distance = length / divide
-        current_distance = distance
-    else:
-        current_distance = distance
-
+    length = geom.length()  
+  
+    def distance_fn():
+        if divide > 0:
+            return length / divide
+        else:
+            import random
+            return distance * random.uniform(0.5,2.5)
+    
     feats = []
 
     if endpoint > 0:
@@ -57,17 +58,20 @@ def create_points_at(startpoint, endpoint, distance, geom, fid, force, divide):
     feature.setGeometry(point)
     feats.append(feature)
 
+    current_distance = 0
     while startpoint + current_distance <= length:
+        step = distance_fn()
         # Get a point along the line at the current distance
         point = geom.interpolate(startpoint + current_distance)
         # Create a new QgsFeature and assign it the new geometry
         feature = QgsFeature(fields)
-        feature['dist'] = (startpoint + current_distance)
+        feature['dist'] = (startpoint + step)
         feature['id'] = fid
         feature.setGeometry(point)
         feats.append(feature)
         # Increase the distance
-        current_distance = current_distance + distance
+        current_distance = current_distance + step
+        print current_distance
 
     # set the last point at endpoint if wanted
     if force is True:
