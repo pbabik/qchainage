@@ -59,6 +59,7 @@ def create_points_at(startpoint, endpoint, distance, geom, fid, force, divide):
     feats.append(feature)
 
     current_distance = 0
+
     while startpoint + current_distance <= length:
         step = distance_fn()
         # Get a point along the line at the current distance
@@ -71,7 +72,6 @@ def create_points_at(startpoint, endpoint, distance, geom, fid, force, divide):
         feats.append(feature)
         # Increase the distance
         current_distance = current_distance + step
-        print current_distance
 
     # set the last point at endpoint if wanted
     if force is True:
